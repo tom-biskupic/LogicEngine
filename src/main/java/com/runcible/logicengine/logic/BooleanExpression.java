@@ -7,6 +7,12 @@ import java.util.List;
 
 public class BooleanExpression
 {
+	/**
+	 * Constructs a Boolean expression of the type specified with the 
+	 * name specified. The name is used for printing.
+	 * @param type The type of the expression
+	 * @param name The name of the exression
+	 */
     public BooleanExpression(ExpressionType type,String name)
     {
         this.type = type;
@@ -16,17 +22,34 @@ public class BooleanExpression
         this.subExpressions = new ArrayList<BooleanExpression>();
     }
 
+    /**
+     * Constructs a Boolean expression of the type specified.
+     * @param type The type to create
+     */
     public BooleanExpression(ExpressionType type)
     {
         this(type,type.toString());
     }
 
+    /**
+     * Create a Boolean expression with initialized with a set of sub
+     * expressions. For example if this is an OR expression, the sub-expressions
+     * would be parameters to the OR.
+     * @param type The type of this expression
+     * @param subExpressions a list of sub-expressions to add
+     */
     public BooleanExpression(ExpressionType type, BooleanExpression... subExpressions)
     {
         this(type,type.toString());
         this.subExpressions = Arrays.asList(subExpressions);
     }
 
+    /**
+     * Replaces the Boolean expression with an alternative one. Used to replace
+     * an expression 'in-place' without messing up the references to the existing
+     * expression
+     * @param newExpression The expression to copy into this one.
+     */
     public void replaceWith(BooleanExpression newExpression)
     {
         this.type = newExpression.type;
@@ -36,56 +59,100 @@ public class BooleanExpression
         this.subExpressions = newExpression.subExpressions;
     }
     
+    /**
+     * Returns the list of sub-expressions to this expression
+     * @return the list of sub-expressions
+     */
     public List<BooleanExpression> getSubExpressions()
     {
         return this.subExpressions;
     }
 
+    /**
+     * Replaces the set of sub-expressions with the list provided 
+     * @param expressions The list of sub-expressions to replace the current ones
+     */
     public void setSubExpressions(List<BooleanExpression> expressions)
     {
         this.subExpressions = expressions;
     }
 
+    /**
+     * Adds a sub-expression to the expression
+     * @param expression The sub-expression to add
+     */
     public void addSubExpression(BooleanExpression expression)
     {
         this.subExpressions.add(expression);
     }
 
+    /**
+     * Removes all the sub-expressions to this expression
+     */
     public void clearSubExpressions()
     {
         subExpressions = new ArrayList<BooleanExpression>();
     }
 
+    /**
+     * Returns the type of this Boolean expression
+     * @return The type
+     */
     public ExpressionType getType()
     {
         return type;
     }
 
+    /**
+     * Sets the type of this Boolean expression
+     * @param type the type
+     */
     public void setType(ExpressionType type)
     {
         this.type = type;
     }
 
+    /**
+     * Returns the name of this expression
+     * @return
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Sets the name of this expression
+     * @param name The new name to apply
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /**
+     * Returns the boolean value for this expression
+     * @return The boolean value
+     */
     public BooleanValue getBooleanValue()
     {
         return value;
     }
 
+    /**
+     * Sets the boolean value of this expression. Used
+     * when evaluating the expression
+     * @param value The new boolean value
+     */
     public void setBooleanValue(BooleanValue value)
     {
         this.value = value;
     }
 
+    /**
+     * Applys the visitor to this boolean expression
+     * @param visitor The visitor to apply
+     */
     public void apply(BooleanExpressionVisitor visitor)
     {
         visitor.visit(this);
@@ -93,6 +160,10 @@ public class BooleanExpression
         clearMementos();
     }
     
+    /**
+     * Clears any mementos stored by visitors in this
+     * Boolean expression
+     */
     private void clearMementos()
     {
         if ( this.memento != null )

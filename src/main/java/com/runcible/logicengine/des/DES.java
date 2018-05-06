@@ -40,4 +40,9 @@ public class DES extends ExpressionBlock
 
         setExpressions(finalPermutation);
     }
+    
+    public static void main(String[] args) 
+    {
+    	
+    }
 }

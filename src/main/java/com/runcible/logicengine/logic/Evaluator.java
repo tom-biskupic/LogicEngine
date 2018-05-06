@@ -35,7 +35,6 @@ public class Evaluator implements BooleanExpressionVisitor
                     //
                     //  Nothing to do here as it is already evaluated
                     //
-                    evaluateTerm(expression);
                     break;
                 }
             }
@@ -46,12 +45,6 @@ public class Evaluator implements BooleanExpressionVisitor
             //  Can't evaluate if not constant so just leave it
             //
         }
-    }
-
-    private void evaluateTerm(BooleanExpression expression)
-    {
-        // TODO Auto-generated method stub
-        
     }
 
     private void evaluateNot(BooleanExpression expression) throws NotConstantError
@@ -68,6 +61,25 @@ public class Evaluator implements BooleanExpressionVisitor
 
     private void evaluateOr(BooleanExpression expression) throws NotConstantError
     {
+        evaluateAndOr(expression,true);
+    }
+
+    private void evaluateAnd(BooleanExpression expression) throws NotConstantError
+    {
+        evaluateAndOr(expression,false);
+    }
+
+    /**
+     * This will evaluate an and or an or expression. This looks for 
+     * a sub-expression with a particular value and if it finds one
+     * the overall expression takes gets that value.
+     * @param expression
+     * @throws NotConstantError 
+     */
+    private void evaluateAndOr(BooleanExpression expression, boolean lookfor) throws NotConstantError
+    {
+        boolean nonConstSubExpr = false;
+        
         for( BooleanExpression b : expression.getSubExpressions() )
         {
             if ( ! b.getBooleanValue().hasValue() )
@@ -75,33 +87,27 @@ public class Evaluator implements BooleanExpressionVisitor
                 visit(b);
             }
             
-            if ( b.getBooleanValue().getValue() )
+            if ( b.getBooleanValue().hasValue() )
             {
-                expression.setBooleanValue( new BooleanValue(true));
-                return;
+                if ( b.getBooleanValue().getValue() == lookfor )
+                {
+                    expression.setBooleanValue( new BooleanValue(lookfor));
+                    return;
+                }
+            }
+            else
+            {
+                nonConstSubExpr = true;
             }
         }
         
-        expression.setBooleanValue(new BooleanValue(false));
-    }
-
-    private void evaluateAnd(BooleanExpression expression) throws NotConstantError
-    {
-        for( BooleanExpression b : expression.getSubExpressions() )
+        if ( nonConstSubExpr )
         {
-            if ( ! b.getBooleanValue().hasValue() )
-            {
-                visit(b);
-            }
-
-            if ( ! b.getBooleanValue().getValue() )
-            {
-                expression.setBooleanValue(new BooleanValue(false));
-                return;
-            }
+            expression.getBooleanValue().setHasNoValue();
         }
-        
-        expression.setBooleanValue(new BooleanValue(true));
+        else
+        {
+            expression.getBooleanValue().setValue(!lookfor);
+        }
     }
-
 }

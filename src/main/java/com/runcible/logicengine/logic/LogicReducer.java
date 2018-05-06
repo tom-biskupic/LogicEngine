@@ -8,6 +8,12 @@ import java.util.Set;
 
 public class LogicReducer implements BooleanExpressionVisitor
 {
+	/**
+	 * A Memento to store if a BooleanExpression has already been reduced.
+	 * Because each expression could be a sub-expression of multiple other expressions
+	 * @author tom
+	 *
+	 */
     private class LogicReducerMemento implements Memento
     {
         public LogicReducerMemento(boolean reduced)
@@ -18,17 +24,31 @@ public class LogicReducer implements BooleanExpressionVisitor
         boolean isReduced=false;
     }
     
+    /**
+     * Returns true if the Boolean expression has already been reduced
+     * @param expression The expression to test
+     * @return true if the expression has already been reduced.
+     */
     private boolean isReduced(BooleanExpression expression)
     {
         LogicReducerMemento memento = (LogicReducerMemento) expression.getMemento();
         return ( memento != null && memento.isReduced );
     }
     
+    /**
+     * Marks the boolean expression as having been reduced
+     * @param expression The expression to modify
+     * @param value true if the expression has been reduced and false otherwise
+     */
     private void setReduced(BooleanExpression expression,boolean value)
     {
         expression.setMemento( new LogicReducerMemento(true));
     }
-    
+
+    /**
+     * Implements the visit method to allow the logic reducer to process each boolean
+     * expression in the tree.
+     */
     @Override
     public void visit(BooleanExpression expression)
     {
