@@ -8,22 +8,6 @@ import java.util.Set;
 
 public class LogicReducer implements BooleanExpressionVisitor
 {
-	/**
-	 * A Memento to store if a BooleanExpression has already been reduced.
-	 * Because each expression could be a sub-expression of multiple other expressions
-	 * @author tom
-	 *
-	 */
-    private class LogicReducerMemento implements Memento
-    {
-        public LogicReducerMemento(boolean reduced)
-        {
-            this.isReduced = reduced;
-        }
-        
-        boolean isReduced=false;
-    }
-    
     /**
      * Returns true if the Boolean expression has already been reduced
      * @param expression The expression to test
@@ -31,8 +15,8 @@ public class LogicReducer implements BooleanExpressionVisitor
      */
     private boolean isReduced(BooleanExpression expression)
     {
-        LogicReducerMemento memento = (LogicReducerMemento) expression.getMemento();
-        return ( memento != null && memento.isReduced );
+        IsVisitedMemento memento = (IsVisitedMemento) expression.getMemento();
+        return ( memento != null && memento.isVisited());
     }
     
     /**
@@ -42,7 +26,7 @@ public class LogicReducer implements BooleanExpressionVisitor
      */
     private void setReduced(BooleanExpression expression,boolean value)
     {
-        expression.setMemento( new LogicReducerMemento(true));
+        expression.setMemento( new IsVisitedMemento(true));
     }
 
     /**
@@ -93,23 +77,29 @@ public class LogicReducer implements BooleanExpressionVisitor
     private void reduceAnd(BooleanExpression expression)
     {
         andOrReducer(expression,false);
-        
+
         //
         //  If the expression didn't get totally squashed then see if we can merge
         //  any sub-expressions into it
         //
-        lookForExpressionsToMerge(expression);
+        if ( !isReduced(expression))
+        {
+            lookForExpressionsToMerge(expression);
+        }
     }
 
     private void reduceOr(BooleanExpression expression)
     {
         andOrReducer(expression,true);
-        
+
         //
         //  If the expression didn't get totally squashed then see if we can merge
         //  any sub-expressions into it
         //
-        lookForExpressionsToMerge(expression);
+        if ( !isReduced(expression))
+        {
+            lookForExpressionsToMerge(expression);
+        }
     }
     
     private void reduceNot(BooleanExpression expression)
@@ -122,7 +112,7 @@ public class LogicReducer implements BooleanExpressionVisitor
             {
                 reduced++;
                 constantNotRemoved++;
-                makeConstant(expression, new BooleanValue(!subExpression.getBooleanValue().getValue()));
+                makeConstant(expression, !subExpression.getBooleanValue().getValue());
             }
             else if ( subExpression.getType() == ExpressionType.NOT )
             {
@@ -134,6 +124,27 @@ public class LogicReducer implements BooleanExpressionVisitor
 
                 expression.replaceWith(subExpression.getSubExpressions().get(0));
             }
+            //
+            //  Adding this back in makes reduction run out of RAM :(
+            //
+//            else if ( subExpression.getType() == ExpressionType.AND )
+//            {
+//                //System.out.println("Doing Not(AND(...");
+//                reduced++;
+//                deMorgans++;
+//                List<BooleanExpression> inverted = new ArrayList<BooleanExpression>();
+//                invert(inverted,subExpression.getSubExpressions());
+//                expression.replaceWith(BooleanExpression.makeOr(inverted.toArray(new BooleanExpression[0])));
+//            }
+//            else if ( subExpression.getType() == ExpressionType.OR )
+//            {
+//                //System.out.println("Doing Not(OR(...");
+//                reduced++;
+//                deMorgans++;
+//                List<BooleanExpression> inverted = new ArrayList<BooleanExpression>();
+//                invert(inverted,subExpression.getSubExpressions());
+//                expression.replaceWith(BooleanExpression.makeAnd(inverted.toArray(new BooleanExpression[0])));
+//            }
         }
         catch (NotConstantError e)
         {
@@ -147,6 +158,8 @@ public class LogicReducer implements BooleanExpressionVisitor
     private void lookForExpressionsToMerge(BooleanExpression expression)
     {
         boolean modsMade = false;
+        
+        int howManyTimes=0;
         
         do
         {
@@ -171,7 +184,13 @@ public class LogicReducer implements BooleanExpressionVisitor
                 {
                     BooleanExpression subSub = subExpression.getSubExpressions().get(0);
                     
-                    if (    (   expression.getType().equals(ExpressionType.AND) 
+                    if ( subSub.getType() == ExpressionType.NOT )
+                    {
+                        newSubExpressionList.add(subSub.getSubExpressions().get(0));
+                        notNotRemoved++;
+                        modsMade = true;
+                    }
+                    else if (   (   expression.getType().equals(ExpressionType.AND) 
                                 && 
                                 subSub.getType().equals(ExpressionType.OR))
                             ||
@@ -179,11 +198,9 @@ public class LogicReducer implements BooleanExpressionVisitor
                                 && 
                                 subSub.getType().equals(ExpressionType.AND)) )
                     {
-                        for( BooleanExpression subSubSub : subSub.getSubExpressions() )
-                        {
-                            newSubExpressionList.add(invert(subSubSub));
-                        }
+                        invert(newSubExpressionList,subSub.getSubExpressions());
                         
+                        System.out.println("Doing Demorgans merge");
                         reduced++;
                         modsMade = true;
                         deMorgans++;
@@ -203,30 +220,39 @@ public class LogicReducer implements BooleanExpressionVisitor
             {
                 expression.setSubExpressions(newSubExpressionList);
             }
+            
+            howManyTimes++;
+            
+            if ( howManyTimes > 10 )
+            {
+                System.out.println("We are stuck in a loop!!");
+            }
         } 
         while(modsMade);
     }
 
-    private BooleanExpression invert(BooleanExpression expression)
+    private void invert(List<BooleanExpression> result, List<BooleanExpression> expressions)
     {
-        //
-        //  Invert each expression. If it is already a NOT then just take the
-        //  sub-expression. Otherwise add a NOT expresions
-        //
-        if ( expression.getType().equals(ExpressionType.NOT))
+        for(BooleanExpression expression : expressions)
         {
-            return expression.getSubExpressions().get(0);
-        }
-        else
-        {
-            return new BooleanExpression(ExpressionType.NOT,expression);
+            //
+            //  Invert each expression. If it is already a NOT then just take the
+            //  sub-expression. Otherwise add a NOT(expression)
+            //
+            if ( expression.getType().equals(ExpressionType.NOT))
+            {
+                result.add(expression.getSubExpressions().get(0));
+            }
+            else
+            {
+                result.add(BooleanExpression.makeNot(expression));
+            }
         }
     }
 
-    private void makeConstant(BooleanExpression expression, BooleanValue value)
+    private void makeConstant(BooleanExpression expression, boolean value)
     {
-        BooleanExpression newExpression = new BooleanExpression(ExpressionType.TERM);
-        newExpression.setBooleanValue(value);
+        BooleanExpression newExpression = new ConstantExpression(value);
         setReduced(newExpression,true);
         expression.replaceWith( newExpression );
     }
@@ -242,7 +268,7 @@ public class LogicReducer implements BooleanExpressionVisitor
             if ( expression.getBooleanValue().hasValue())
             {
                 reduced++;
-                makeConstant(expression, expression.getBooleanValue());
+                makeConstant(expression, expression.getBooleanValue().getValue());
             }
             else
             {
@@ -258,7 +284,7 @@ public class LogicReducer implements BooleanExpressionVisitor
                         {
                             reduced++;
                             constantExpr++;
-                            makeConstant(expression,b.getBooleanValue());
+                            makeConstant(expression,b.getBooleanValue().getValue());
                             return;
                         }
                         else
@@ -288,7 +314,7 @@ public class LogicReducer implements BooleanExpressionVisitor
                                         tautologies++;
                                     }
                                     
-                                    makeConstant(expression, new BooleanValue(lookFor));
+                                    makeConstant(expression, lookFor);
                                     return;
                                 }
                             }   
@@ -312,7 +338,7 @@ public class LogicReducer implements BooleanExpressionVisitor
                 {
                     reduced++;
                     constantExpr++;
-                    makeConstant(expression,new BooleanValue(!lookFor));
+                    makeConstant(expression,!lookFor);
                 }
                 else
                 {

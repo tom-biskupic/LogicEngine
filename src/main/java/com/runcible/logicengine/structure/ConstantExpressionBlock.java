@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import com.runcible.logicengine.logic.BooleanExpression;
 import com.runcible.logicengine.logic.BooleanValue;
+import com.runcible.logicengine.logic.ConstantExpression;
 import com.runcible.logicengine.logic.ExpressionType;
 
 /**
@@ -31,11 +32,9 @@ public class ConstantExpressionBlock extends ExpressionBlock
 
         for(int i=0;i<size;i++)
         {
-            BooleanExpression expression = new BooleanExpression(ExpressionType.TERM,name+i);
+            BooleanExpression expression = new ConstantExpression(name+i);
             
-            BooleanValue value = new BooleanValue();
-            expression.setBooleanValue(value);
-            values.set(i, value);
+            values.set(i, expression.getBooleanValue());
             
             setExpression(i, expression);
         }

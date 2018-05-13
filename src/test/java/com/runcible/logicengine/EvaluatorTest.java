@@ -16,9 +16,7 @@ public class EvaluatorTest
     @Test
     public void testNot() throws NotConstantError
     {
-        BooleanExpression notExpr = new BooleanExpression(
-                ExpressionType.NOT,
-                new ConstantExpression(false));
+        BooleanExpression notExpr = BooleanExpression.makeNot(new ConstantExpression(false));
         
         Evaluator evaluator = new Evaluator();
         
@@ -30,9 +28,7 @@ public class EvaluatorTest
     @Test(expected=NotConstantError.class)
     public void testNotNotConstant() throws NotConstantError
     {
-        BooleanExpression notExpr = new BooleanExpression(
-                ExpressionType.NOT,
-                new ConstantExpression("X"));
+        BooleanExpression notExpr = BooleanExpression.makeNot(new ConstantExpression("X"));
         
         Evaluator evaluator = new Evaluator();
         
@@ -44,9 +40,7 @@ public class EvaluatorTest
     @Test
     public void testNotAlreadyEvaluated() throws NotConstantError
     {
-        BooleanExpression notExpr = new BooleanExpression(
-                ExpressionType.NOT,
-                new ConstantExpression(false));
+        BooleanExpression notExpr = BooleanExpression.makeNot(new ConstantExpression(false));
         
         Evaluator evaluator = new Evaluator();
         
@@ -72,8 +66,7 @@ public class EvaluatorTest
         //  So one expression is true but the other is non-const. In this case
         //  we evaluate to true anyway.
         //
-        BooleanExpression orExpr = new BooleanExpression(
-                ExpressionType.OR,
+        BooleanExpression orExpr = BooleanExpression.makeOr(
                 new ConstantExpression(true),
                 new ConstantExpression("X"));
         
@@ -88,8 +81,7 @@ public class EvaluatorTest
         //  One expression is false and the other is non-const. In this
         //  case the result is non-const
         //
-        BooleanExpression orExpr = new BooleanExpression(
-                ExpressionType.OR,
+        BooleanExpression orExpr = BooleanExpression.makeOr(
                 new ConstantExpression(false),
                 new ConstantExpression("X"));
         
@@ -114,8 +106,7 @@ public class EvaluatorTest
         //  In this case the result depends on the the non-const expression
         //  so the result is non-const
         //
-        BooleanExpression andExpr = new BooleanExpression(
-                ExpressionType.AND,
+        BooleanExpression andExpr = BooleanExpression.makeAnd(
                 new ConstantExpression(false),
                 new ConstantExpression("X"));
         
@@ -130,8 +121,7 @@ public class EvaluatorTest
         //  So one expression is true but the other is non-const. In this case
         //  we evaluate to false anyway.
         //
-        BooleanExpression andExpr = new BooleanExpression(
-                ExpressionType.AND,
+        BooleanExpression andExpr = BooleanExpression.makeAnd(
                 new ConstantExpression(true),
                 new ConstantExpression("X"));
         

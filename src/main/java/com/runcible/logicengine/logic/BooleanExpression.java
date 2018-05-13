@@ -156,10 +156,20 @@ public class BooleanExpression
     public void apply(BooleanExpressionVisitor visitor)
     {
         visitor.visit(this);
-        
+        //applyInternal(visitor);
         clearMementos();
     }
-    
+
+    public void applyInternal(BooleanExpressionVisitor visitor)
+    {
+        for(BooleanExpression b : subExpressions )
+        {
+            b.applyInternal(visitor);
+        }
+        
+        visitor.visit(this);
+    }
+
     /**
      * Clears any mementos stored by visitors in this
      * Boolean expression
@@ -197,6 +207,21 @@ public class BooleanExpression
         this.memento = memento;
     }
     
+    public static BooleanExpression makeAnd(BooleanExpression... subExpressions)
+    {
+        return new BooleanExpression(ExpressionType.AND,subExpressions);
+    }
+
+    public static BooleanExpression makeOr(BooleanExpression... subExpressions)
+    {
+        return new BooleanExpression(ExpressionType.OR,subExpressions);
+    }
+
+    public static BooleanExpression makeNot(BooleanExpression subExpression)
+    {
+        return new BooleanExpression(ExpressionType.NOT,subExpression);
+    }
+
     private List<BooleanExpression> subExpressions;
     
     private ExpressionType          type;

@@ -2,12 +2,16 @@ package com.runcible.logicengine;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 
 import com.runcible.logicengine.logic.BooleanExpression;
+import com.runcible.logicengine.logic.BooleanExpressionVisitor;
+import com.runcible.logicengine.logic.ConstantExpression;
 import com.runcible.logicengine.logic.ExpressionType;
 
 
@@ -34,6 +38,11 @@ public class BooleanExpressionTest
         BooleanExpression toBeReplaced = new BooleanExpression(ExpressionType.AND,subTerm1,subTerm2);
         
         BooleanExpression replaceWith = new BooleanExpression(ExpressionType.TERM);
+        
+        toBeReplaced.replaceWith(replaceWith);
+        assertEquals(replaceWith.getType(),toBeReplaced.getType());
+        assertEquals(replaceWith.getBooleanValue(),toBeReplaced.getBooleanValue());
+        assertEquals(replaceWith.getSubExpressions(),toBeReplaced.getSubExpressions());
     }
     
     private void checkValue(
@@ -52,4 +61,5 @@ public class BooleanExpressionTest
         assertEquals(null,newExpression.getMemento());
         assertEquals(false,newExpression.getBooleanValue().hasValue());
     }
+    
 }
