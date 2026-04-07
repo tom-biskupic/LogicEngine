@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"/c/Users/tombi/Documents/Github/tom-biskupic/LogicEngine\" && ./gradlew test --tests \"com.runcible.logicengine.sha2.SHA256Test.testSHA256\" 2>&1 | tail -50)",
+      "Bash(where gradle:*)",
+      "Read(//c/Users/tombi/.gradle//**)",
+      "Read(//c/ProgramData/chocolatey/bin/**)",
+      "Bash(cd \"/c/Users/tombi/Documents/Github/tom-biskupic/LogicEngine\" && /c/Users/tombi/gradle-9.1.0/bin/gradle test --tests \"com.runcible.logicengine.sha2.SHA256Test.testSHA256\" 2>&1 | tail -60)",
+      "Bash(find /c/Users/tombi/.gradle/caches -name \"junit*.jar\" 2>/dev/null | head -5)",
+      "Bash(find /c/Users/tombi/.gradle/caches -name \"junit-4*.jar\" 2>/dev/null | head -5)",
+      "Read(//c/Users/tombi/.gradle/**)",
+      "Bash(cd \"/c/Users/tombi/Documents/Github/tom-biskupic/LogicEngine\" && /c/Users/tombi/.gradle/wrapper/dists/gradle-8.9-bin/90cnw93cvbtalezasaz0blq0a/gradle-8.9/bin/gradle test --tests \"com.runcible.logicengine.sha2.SHA256Test.testSHA256\" 2>&1 | tail -60)",
+      "Bash(find /c/Users/tombi/.gradle/caches -name \"log4j*.jar\" ! -name \"*sources*\" ! -name \"*javadoc*\" 2>/dev/null | head -3)",
+      "Bash(find /c/Users/tombi/.gradle/caches -name \"log4j-1*.jar\" ! -name \"*sources*\" 2>/dev/null | head -3)",
+      "Bash(JUNIT=/c/Users/tombi/.gradle/wrapper/dists/gradle-8.9-bin/90cnw93cvbtalezasaz0blq0a/gradle-8.9/lib/junit-4.13.2.jar\nHAMCREST=/c/Users/tombi/.gradle/wrapper/dists/gradle-8.9-bin/90cnw93cvbtalezasaz0blq0a/gradle-8.9/lib/hamcrest-core-1.3.jar\nOUTDIR=\"/c/Users/tombi/Documents/Github/tom-biskupic/LogicEngine/build/classes\"\n\njava -cp \"$OUTDIR:$JUNIT:$HAMCREST\" org.junit.runner.JUnitCore \\\\\n  com.runcible.logicengine.sha2.SHA256Test 2>&1)",
+      "Bash(find /c/Users/tombi/.gradle -name \"junit*.jar\" 2>/dev/null | head -5)"
+    ]
+  }
+}
