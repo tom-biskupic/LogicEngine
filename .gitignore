@@ -1,2 +1,4 @@
-.gradle
-.claude
+.gradle/
+.claude/
+.gradle/
+build/
