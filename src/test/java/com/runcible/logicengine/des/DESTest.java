@@ -48,14 +48,14 @@ public class DESTest
         System.out.println("Running Evaluator...");
         Evaluator evaluator = new Evaluator();
         desCipher.apply(evaluator);
-        System.out.println(evaluator.statsAsString());
+        //System.out.println(evaluator.statsAsString());
         
         System.out.println("Running Reducer...");
         LogicReducer reducer = new LogicReducer();
         desCipher.apply(reducer);
   
         System.out.println(reducer.statsAsString());
-        desCipher.getExpression(0).apply(new Printer(2000));
+        //desCipher.getExpression(0).apply(new Printer(2000));
 
         //
         //  Check the result is still correct after reduction

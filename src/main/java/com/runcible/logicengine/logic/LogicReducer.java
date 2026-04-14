@@ -200,7 +200,7 @@ public class LogicReducer implements BooleanExpressionVisitor
                     {
                         invert(newSubExpressionList,subSub.getSubExpressions());
                         
-                        System.out.println("Doing Demorgans merge");
+                        //System.out.println("Doing Demorgans merge");
                         reduced++;
                         modsMade = true;
                         deMorgans++;
@@ -260,8 +260,8 @@ public class LogicReducer implements BooleanExpressionVisitor
     private void andOrReducer(BooleanExpression expression, boolean lookFor)
     {
         //
-        //  If there is any expression which is false then the whole expression
-        //  becomes a constant
+        //  If there is any expression which is false/true (depending on if it is an and or an or) 
+        //  then the whole expression becomes a constant
         //
         try
         {
@@ -284,7 +284,7 @@ public class LogicReducer implements BooleanExpressionVisitor
                         {
                             reduced++;
                             constantExpr++;
-                            makeConstant(expression,b.getBooleanValue().getValue());
+                            makeConstant(expression,lookFor);
                             return;
                         }
                         else
@@ -320,13 +320,12 @@ public class LogicReducer implements BooleanExpressionVisitor
                             }   
                             
                             newSubExpressionSet.add(b);
+                            allSubsHaveValue = false;
                         }
                         else
                         {
                             duplicatesRemoved++;
                         }
-                        
-                        allSubsHaveValue = false;
                     }
                 }
                 

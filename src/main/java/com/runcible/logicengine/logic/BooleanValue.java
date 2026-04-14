@@ -23,6 +23,46 @@ public class BooleanValue
     }
     
     /**
+     * Copy constructor - constructs a boolean value with the same value as the other
+     * @param other
+     */
+    public BooleanValue(BooleanValue other)
+    {
+        this.hasValue = other.hasValue;
+        this.value = other.value;
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if ( other == null || !(other instanceof BooleanValue) )
+        {
+            return false;
+        }
+
+        BooleanValue otherBool = (BooleanValue)other;
+
+        if ( this.hasValue != otherBool.hasValue )
+        {
+            return false;
+        }
+
+        if ( this.hasValue && this.value != otherBool.value )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() 
+    {
+        // Use the same fields as the equals method
+        return java.util.Objects.hash(hasValue, value);
+    }
+
+    /**
      * Returns the value of this boolean value
      * @return The value of this boolean value
      * @throws NotConstantError if there is no value set (i.e. the expression is not constant)

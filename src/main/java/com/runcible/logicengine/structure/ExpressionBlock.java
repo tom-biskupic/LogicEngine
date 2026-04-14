@@ -99,11 +99,11 @@ public class ExpressionBlock
     
     public void apply(BooleanExpressionVisitor visitor)
     {
-        int i=0;
+        //int i=0;
         for( BooleanExpression e : expressions )
         {
             e.apply(visitor);
-            System.out.println("Completed expression "+i++);
+            //System.out.println("Completed expression "+i++);
         }
     }
 

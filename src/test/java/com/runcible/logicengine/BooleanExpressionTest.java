@@ -41,6 +41,7 @@ public class BooleanExpressionTest
         
         toBeReplaced.replaceWith(replaceWith);
         assertEquals(replaceWith.getType(),toBeReplaced.getType());
+        System.out.println("Values equals = "+replaceWith.getBooleanValue().equals(toBeReplaced.getBooleanValue()));
         assertEquals(replaceWith.getBooleanValue(),toBeReplaced.getBooleanValue());
         assertEquals(replaceWith.getSubExpressions(),toBeReplaced.getSubExpressions());
     }

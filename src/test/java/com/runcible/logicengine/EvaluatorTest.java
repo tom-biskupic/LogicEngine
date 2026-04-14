@@ -118,15 +118,16 @@ public class EvaluatorTest
     public void testAndNotConst() throws NotConstantError
     {
         //
-        //  So one expression is true but the other is non-const. In this case
+        //  So one expression is false but the other is non-const. In this case
         //  we evaluate to false anyway.
         //
         BooleanExpression andExpr = BooleanExpression.makeAnd(
-                new ConstantExpression(true),
-                new ConstantExpression("X"));
+                new ConstantExpression(false),
+                BooleanExpression.makeNot(new ConstantExpression("X")));
         
         andExpr.apply(new Evaluator());
-        assertEquals(false,andExpr.getBooleanValue().hasValue());
+        assertEquals(true,andExpr.getBooleanValue().hasValue());
+        assertEquals(false,andExpr.getBooleanValue().getValue());
     }
 
     @Test
@@ -144,6 +145,23 @@ public class EvaluatorTest
         assertEquals(true,expr.getBooleanValue().getValue());
     }
     
+    @Test
+    public void testCrossLinking() throws NotConstantError
+    {
+        BooleanExpression a = new ConstantExpression(false);
+        BooleanExpression b = new ConstantExpression(false);
+
+        BooleanExpression expr = BooleanExpression.makeAnd(
+            BooleanExpression.makeOr(a, b),
+            BooleanExpression.makeOr(
+                BooleanExpression.makeNot(a),
+                BooleanExpression.makeNot(b)
+            ));
+        expr.apply(new Evaluator());
+        assertEquals(true,expr.getBooleanValue().hasValue());
+        assertEquals(false,expr.getBooleanValue().getValue());
+    }
+
     private void testExpr(ExpressionType expressionType,boolean value1,boolean value2, boolean expected) throws NotConstantError
     {
         BooleanExpression expr = new BooleanExpression(

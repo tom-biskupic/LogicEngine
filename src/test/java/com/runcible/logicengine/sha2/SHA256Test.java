@@ -10,6 +10,7 @@ import com.runcible.logicengine.logic.NotConstantError;
 import com.runcible.logicengine.structure.ConstantExpressionBlock;
 import com.runcible.logicengine.structure.ExpressionBlockSizeError;
 import com.runcible.logicengine.structure.TerminalBlock;
+import com.runcible.logicengine.logic.Printer;
 
 public class SHA256Test
 {
@@ -59,20 +60,16 @@ public class SHA256Test
 
         TerminalBlock terminal = new TerminalBlock(sha256);
 
-        System.out.println("Running Evaluator...");
-        Evaluator evaluator = new Evaluator();
-        sha256.apply(evaluator);
-        System.out.println(evaluator.statsAsString());
-
-        System.out.println("Running Reducer...");
-        LogicReducer reducer = new LogicReducer();
-        sha256.apply(reducer);
-        System.out.println(reducer.statsAsString());
+        // System.out.println("Running Reducer...");
+        // LogicReducer reducer = new LogicReducer();
+        // sha256.apply(reducer);
+        // System.out.println(reducer.statsAsString());
 
         // Set the message to the known test vector and re-evaluate with a fresh Evaluator
         message.setValueFromHex(ABC_MESSAGE);
+        sha256.apply(new LogicReducer());
         sha256.apply(new Evaluator());
-
+        //sha256.getExpression(0).apply(new Printer());
         assertEquals(ABC_DIGEST, terminal.valueAsHex());
     }
 }

@@ -22,8 +22,8 @@ public class Evaluator implements BooleanExpressionVisitor
             if ( maxDepth < depth )
             {
                 maxDepth = depth;
-            }
-
+            }            
+            
             switch(expression.getType())
             {
                 case AND:

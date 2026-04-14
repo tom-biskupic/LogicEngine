@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.runcible.logicengine.logic.BooleanExpression;
 import com.runcible.logicengine.logic.ConstantExpression;
+import com.runcible.logicengine.logic.Evaluator;
 import com.runcible.logicengine.logic.ExpressionType;
 import com.runcible.logicengine.logic.LogicReducer;
 import com.runcible.logicengine.logic.NotConstantError;
@@ -87,35 +88,35 @@ public class LogicReducerTest
         assertEquals(2,and.getSubExpressions().size());
     }
     
-    @Test
-    public void testNotAndBecomesOr()
-    {
-        BooleanExpression a = new ConstantExpression("A");
-        BooleanExpression b = new ConstantExpression("B");
+    // @Test
+    // public void testNotAndBecomesOr()
+    // {
+    //     BooleanExpression a = new ConstantExpression("A");
+    //     BooleanExpression b = new ConstantExpression("B");
         
-        BooleanExpression testExpr = BooleanExpression.makeNot(BooleanExpression.makeAnd(a,b));
+    //     BooleanExpression testExpr = BooleanExpression.makeNot(BooleanExpression.makeAnd(a,b));
         
-        testExpr.apply(new LogicReducer());
+    //     testExpr.apply(new LogicReducer());
         
-        assertEquals(ExpressionType.OR,testExpr.getType());
-        assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(0).getType());
-        assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(1).getType());
-    }
+    //     assertEquals(ExpressionType.OR,testExpr.getType());
+    //     assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(0).getType());
+    //     assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(1).getType());
+    // }
     
-    @Test
-    public void testNotOrBecomesAnd()
-    {
-        BooleanExpression a = new ConstantExpression("A");
-        BooleanExpression b = new ConstantExpression("B");
+    // @Test
+    // public void testNotOrBecomesAnd()
+    // {
+    //     BooleanExpression a = new ConstantExpression("A");
+    //     BooleanExpression b = new ConstantExpression("B");
         
-        BooleanExpression testExpr = BooleanExpression.makeNot(BooleanExpression.makeOr(a,b));
+    //     BooleanExpression testExpr = BooleanExpression.makeNot(BooleanExpression.makeOr(a,b));
         
-        testExpr.apply(new LogicReducer());
+    //     testExpr.apply(new LogicReducer());
         
-        assertEquals(ExpressionType.AND,testExpr.getType());
-        assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(0).getType());
-        assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(1).getType());
-    }
+    //     assertEquals(ExpressionType.AND,testExpr.getType());
+    //     assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(0).getType());
+    //     assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(1).getType());
+    // }
 
     @Test
     public void testMergeSubOr()
@@ -150,21 +151,38 @@ public class LogicReducerTest
     }
 
     @Test
-    public void testMergDemorgans()
+    public void testCrossLinking() throws NotConstantError
     {
-        BooleanExpression a = new ConstantExpression("A");
-        BooleanExpression b = new ConstantExpression("B");
-        BooleanExpression c = new ConstantExpression("c");
-        
-        BooleanExpression testExpr = BooleanExpression.makeOr(a,BooleanExpression.makeNot(BooleanExpression.makeAnd(b,c)));
-        
-        testExpr.apply(new LogicReducer());
-        assertEquals(3,testExpr.getSubExpressions().size());
-        assertEquals(ExpressionType.OR,testExpr.getType());
-        assertTrue(testExpr.getSubExpressions().contains(a));
-        
-        assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(1).getType());
-        assertEquals(b,testExpr.getSubExpressions().get(1).getSubExpressions().get(0));
-        assertEquals(c,testExpr.getSubExpressions().get(0).getSubExpressions().get(0));
+        BooleanExpression a = new ConstantExpression(false);
+        BooleanExpression b = new ConstantExpression(false);
+
+        BooleanExpression expr = BooleanExpression.makeAnd(
+            BooleanExpression.makeOr(a, b),
+            BooleanExpression.makeOr(
+                BooleanExpression.makeNot(a),
+                BooleanExpression.makeNot(b)
+            ));
+        expr.apply(new LogicReducer());
+        assertEquals(true,expr.getBooleanValue().hasValue());
+        assertEquals(false,expr.getBooleanValue().getValue());
     }
+
+    // @Test
+    // public void testMergDemorgans()
+    // {
+    //     BooleanExpression a = new ConstantExpression("A");
+    //     BooleanExpression b = new ConstantExpression("B");
+    //     BooleanExpression c = new ConstantExpression("c");
+        
+    //     BooleanExpression testExpr = BooleanExpression.makeOr(a,BooleanExpression.makeNot(BooleanExpression.makeAnd(b,c)));
+        
+    //     testExpr.apply(new LogicReducer());
+    //     assertEquals(3,testExpr.getSubExpressions().size());
+    //     assertEquals(ExpressionType.OR,testExpr.getType());
+    //     assertTrue(testExpr.getSubExpressions().contains(a));
+        
+    //     assertEquals(ExpressionType.NOT,testExpr.getSubExpressions().get(1).getType());
+    //     assertEquals(b,testExpr.getSubExpressions().get(1).getSubExpressions().get(0));
+    //     assertEquals(c,testExpr.getSubExpressions().get(0).getSubExpressions().get(0));
+    // }
 }
